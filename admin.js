@@ -74,6 +74,11 @@ window.cancelarReserva = async function(id)
   mostrarBloqueos(); // liberar el horario
 };
 
+// 🕒 Cargar horarios ocupados
+const fechaInput = document.getElementById("fecha-horario");
+const hoy = new Date().toISOString().split("T")[0];
+fechaInput.min = hoy;
+
 
 // ✅ Aceptar turno
 window.aceptarTurno = async function(id)
@@ -118,9 +123,21 @@ document.getElementById("bloquear-dia").addEventListener("click", async () =>
   const fecha = document.getElementById("fecha-horario").value;
   if (!fecha) return alert("Seleccioná una fecha");
 
-  await db.collection("bloqueos").add({ fecha });
+  const bloqueosRef = db.collection("bloqueos");
+  const q = query(bloqueosRef, where("fecha", "==", fecha), where("hora", "==", null));
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) 
+  {
+    alert("Este día ya está bloqueado");
+    return;
+  }
+
+  await addDoc(bloqueosRef, { fecha });
   alert("Día bloqueado");
+  mostrarBloqueos();
 });
+
 
 // 🕒 Bloquear horario específico
 document.getElementById("agregar-horario").addEventListener("click", async () => 
@@ -130,18 +147,29 @@ document.getElementById("agregar-horario").addEventListener("click", async () =>
 
   if (!fecha || checkboxes.length === 0) return alert("Seleccioná fecha y al menos un horario");
 
+  const bloqueosRef = db.collection("bloqueos");
   const batch = db.batch();
-  checkboxes.forEach(cb =>
+
+  for (const cb of checkboxes) 
   {
-    const ref = db.collection("bloqueos").doc();
-    batch.set(ref, { fecha, hora: cb.value });
-  });
+    const hora = cb.value;
+
+    // Verificar si ya está bloqueado
+    const q = query(bloqueosRef, where("fecha", "==", fecha), where("hora", "==", hora));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      const ref = bloqueosRef.doc();
+      batch.set(ref, { fecha, hora });
+    } else {
+      console.warn(`Ya está bloqueado: ${fecha} - ${hora}`);
+    }
+  }
 
   await batch.commit();
   alert("Horarios bloqueados");
   mostrarBloqueos();
 });
-
 
 // 🕒 Generar horarios
 function generarHorarios()
@@ -188,22 +216,37 @@ function poblarCheckboxHorarios()
   });
 }
 
-async function mostrarBloqueos() {
+// 🕒 Mostrar bloqueos actuales
+document.getElementById("filtro-fecha").addEventListener("change", mostrarBloqueos);
+
+async function mostrarBloqueos() 
+{
   const lista = document.getElementById("lista-bloqueos");
   lista.innerHTML = "";
 
-  const snapshot = await db.collection("bloqueos").get();
-  snapshot.forEach(doc => {
+  const filtroFecha = document.getElementById("filtro-fecha").value;
+
+  const bloqueosRef = db.collection("bloqueos");
+  const snapshot = filtroFecha
+    ? await getDocs(query(bloqueosRef, where("fecha", "==", filtroFecha)))
+    : await getDocs(bloqueosRef);
+
+  snapshot.forEach(doc => 
+  {
     const { fecha, hora, nombre, telefono } = doc.data();
     const item = document.createElement("li");
 
     let texto = "";
-
-    if (!hora) {
+    if (!hora) 
+    {
       texto = `${fecha} (día completo)`;
-    } else if (nombre && telefono) {
+    }
+     else if (nombre && telefono) 
+    {
       texto = `${fecha} - ${hora} (${nombre} - ${telefono})`;
-    } else {
+    }
+     else
+    {
       texto = `${fecha} - ${hora} (bloqueado manualmente)`;
     }
 
@@ -211,7 +254,8 @@ async function mostrarBloqueos() {
 
     const btnDesbloquear = document.createElement("button");
     btnDesbloquear.textContent = "Desbloquear";
-    btnDesbloquear.onclick = async () => {
+    btnDesbloquear.onclick = async () => 
+    {
       await db.collection("bloqueos").doc(doc.id).delete();
       mostrarBloqueos();
     };
@@ -220,8 +264,6 @@ async function mostrarBloqueos() {
     lista.appendChild(item);
   });
 }
-
-
 
 // 🔄 Inicializar
 window.addEventListener("load", () => 
