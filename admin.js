@@ -25,6 +25,8 @@ async function cargarReservas()
 
   snapshot.forEach(docSnap => {
     const { nombre, telefono, fechaHora, estado } = docSnap.data();
+    // Mostrar información de la reserva en la consola
+    console.log("Reserva:", docSnap.id, "Estado:", estado);
     const fila = document.createElement("tr");
 
     const fecha = formatearFecha(fechaHora);
@@ -73,19 +75,30 @@ window.cancelarReserva = async function(id)
 // ✅ Aceptar turno
 window.aceptarTurno = async function(id)
 {
+  // 🔒 Aceptar y bloquear horario
   const reservaRef = db.collection("reservas").doc(id);
   const reservaSnap = await reservaRef.get();
   const { fechaHora } = reservaSnap.data();
-
-  await reservaRef.update({ estado: "aceptado" });
-
-  // Bloquear automáticamente el horario
   const [fecha, hora] = fechaHora.split("T");
+
+  // 🔍 Verificar si ya está bloqueado
+  const bloqueosRef = db.collection("bloqueos");
+  const q = bloqueosRef.where("fecha", "==", fecha).where("hora", "==", hora);
+  const snapshot = await q.get();
+
+  if (!snapshot.empty) {
+    alert("Este horario ya está bloqueado. No se puede aceptar la reserva.");
+    return;
+  }
+
+  // ✅ Aceptar y bloquear
+  await reservaRef.update({ estado: "aceptado" });
   await db.collection("bloqueos").add({ fecha, hora });
 
   cargarReservas();
   mostrarBloqueos();
 };
+
 
 // ❌ Rechazar turno
 window.rechazarTurno = async function(id) 
