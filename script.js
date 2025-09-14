@@ -12,31 +12,43 @@ const form = document.getElementById("form-reserva");
 const fechaInput = document.getElementById("fecha");
 const horaInput = document.getElementById("hora");
 
-async function cargarHorariosOcupados()
-{
-  // Consulta reservas confirmadas
+async function cargarHorariosOcupados() {
+  const fechaSeleccionada = fechaInput.value;
+  if (!fechaSeleccionada) return;
+
   const reservasRef = collection(db, "reservas");
-  const q = query(reservasRef, where("estado", "==", "confirmado"));
-  const snapshot = await getDocs(q);
+  const bloqueosRef = collection(db, "bloqueos");
 
-  // Lista de horarios ocupados
-  const horariosOcupados = snapshot.docs.map(doc => doc.data().fechaHora);
+  // 🔎 Consultar reservas confirmadas para esa fecha
+  const reservasQuery = query(reservasRef, where("estado", "==", "confirmado"));
+  const reservasSnap = await getDocs(reservasQuery);
 
-  // Deshabilitar horarios ocupados en el <select> de hora
+  // 🔎 Consultar bloqueos para esa fecha
+  const bloqueosQuery = query(bloqueosRef, where("fecha", "==", fechaSeleccionada));
+  const bloqueosSnap = await getDocs(bloqueosQuery);
+
+  // 🕒 Extraer horarios ocupados por reservas
+  const horariosReservados = reservasSnap.docs
+    .map(doc => doc.data().fechaHora)
+    .filter(fh => fh.startsWith(fechaSeleccionada))
+    .map(fh => fh.split("T")[1]);
+
+  // 🕒 Extraer horarios bloqueados por admin
+  const bloqueos = bloqueosSnap.docs.map(doc => doc.data());
+  const diaBloqueado = bloqueos.some(b => !b.hora); // si hay bloqueo sin hora, es día completo
+  const horariosBloqueados = bloqueos.filter(b => b.hora).map(b => b.hora);
+
+  // 🔧 Deshabilitar opciones en el <select>
   const opciones = horaInput.querySelectorAll("option");
-  opciones.forEach(option => 
-  {
-    const fechaSeleccionada = fechaInput.value;
-    const fechaHora = `${fechaSeleccionada}T${option.value}`;
-    if (horariosOcupados.includes(fechaHora)) 
-    {
-      option.disabled = true;
-    } else 
-    {
-      option.disabled = false;
-    }
+  opciones.forEach(option => {
+    const hora = option.value;
+    const debeBloquear =
+      diaBloqueado || horariosReservados.includes(hora) || horariosBloqueados.includes(hora);
+
+    option.disabled = debeBloquear;
   });
 }
+
 
 // Detectar cambio de fecha para actualizar horarios
 fechaInput.addEventListener("change", cargarHorariosOcupados);

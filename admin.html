@@ -36,14 +36,24 @@
     <h2>Horarios disponibles</h2>
     <label for="fecha-horario">Fecha:</label>
     <input type="date" id="fecha-horario">
-    <label for="nuevo-horario">Horarios disponibles:</label>
-    <select id="nuevo-horario" required>
-      <!-- Las opciones se insertan dinámicamente -->
-    </select>
 
-    <button id="agregar-horario">Agregar horario</button>
+    <fieldset id="horarios-disponibles">
+    <legend>Seleccioná horarios para bloquear</legend>
+    <!-- Los checkboxes se insertan dinámicamente desde admin.js -->
+    </fieldset>
+
+
+    <button id="agregar-horario">Bloquear Horarios</button>
     <button id="bloquear-dia">Bloquear día</button>
   </section>
+
+  <section id="bloqueos-actuales">
+    <h2>Bloqueos activos</h2>
+    <ul id="lista-bloqueos">
+    <!-- Se insertan dinámicamente -->
+    </ul>
+  </section>
+
 
   <script src="admin.js"></script>
 </body>

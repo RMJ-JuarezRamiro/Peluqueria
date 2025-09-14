@@ -1,5 +1,6 @@
 // 🔧 Configuración Firebase
-const firebaseConfig = {
+const firebaseConfig = 
+{
   apiKey: "TU_API_KEY",
   authDomain: "TU_AUTH_DOMAIN",
   projectId: "peluqueria-turnos-bdcf8",
@@ -12,7 +13,8 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // 📋 Mostrar reservas
-async function cargarReservas() {
+async function cargarReservas() 
+{
   const reservasRef = db.collection("reservas");
   const snapshot = await reservasRef.get();
   const tabla = document.getElementById("tabla-reservas");
@@ -43,21 +45,33 @@ async function cargarReservas() {
 }
 
 // ✅ Aceptar turno
-window.aceptarTurno = async function(id) {
+window.aceptarTurno = async function(id)
+{
   const reservaRef = db.collection("reservas").doc(id);
+  const reservaSnap = await reservaRef.get();
+  const { fechaHora } = reservaSnap.data();
+
   await reservaRef.update({ estado: "aceptado" });
+
+  // Bloquear automáticamente el horario
+  const [fecha, hora] = fechaHora.split("T");
+  await db.collection("bloqueos").add({ fecha, hora });
+
   cargarReservas();
+  mostrarBloqueos();
 };
 
 // ❌ Rechazar turno
-window.rechazarTurno = async function(id) {
+window.rechazarTurno = async function(id) 
+{
   const reservaRef = db.collection("reservas").doc(id);
   await reservaRef.update({ estado: "rechazado" });
   cargarReservas();
 };
 
 // 🚫 Bloquear día completo
-document.getElementById("bloquear-dia").addEventListener("click", async () => {
+document.getElementById("bloquear-dia").addEventListener("click", async () => 
+{
   const fecha = document.getElementById("fecha-horario").value;
   if (!fecha) return alert("Seleccioná una fecha");
 
@@ -66,28 +80,42 @@ document.getElementById("bloquear-dia").addEventListener("click", async () => {
 });
 
 // 🕒 Bloquear horario específico
-document.getElementById("agregar-horario").addEventListener("click", async () => {
+document.getElementById("agregar-horario").addEventListener("click", async () => 
+{
   const fecha = document.getElementById("fecha-horario").value;
-  const hora = document.getElementById("nuevo-horario").value;
-  if (!fecha || !hora) return alert("Completá fecha y horario");
+  const checkboxes = document.querySelectorAll("#horarios-disponibles input:checked");
 
-  await db.collection("bloqueos").add({ fecha, hora });
-  alert("Horario bloqueado");
+  if (!fecha || checkboxes.length === 0) return alert("Seleccioná fecha y al menos un horario");
+
+  const batch = db.batch();
+  checkboxes.forEach(cb =>
+  {
+    const ref = db.collection("bloqueos").doc();
+    batch.set(ref, { fecha, hora: cb.value });
+  });
+
+  await batch.commit();
+  alert("Horarios bloqueados");
+  mostrarBloqueos();
 });
 
+
 // 🕒 Generar horarios
-function generarHorarios() {
+function generarHorarios()
+{
   const horarios = [];
   let hora = 8;
   let minuto = 0;
 
-  while (hora < 21 || (hora === 21 && minuto === 0)) {
+  while (hora < 21 || (hora === 21 && minuto === 0)) 
+  {
     const h = hora.toString().padStart(2, '0');
     const m = minuto.toString().padStart(2, '0');
     horarios.push(`${h}:${m}`);
 
     minuto += 30;
-    if (minuto === 60) {
+    if (minuto === 60) 
+    {
       minuto = 0;
       hora++;
     }
@@ -96,23 +124,58 @@ function generarHorarios() {
   return horarios;
 }
 
-// 🕒 Poblar el <select> con horarios disponibles
-function poblarHorarios() {
-  const selectHorario = document.getElementById("nuevo-horario");
-  const horarios = generarHorarios();
+// 🕒 Poblar select con horarios
+function poblarCheckboxHorarios()
+{
+  const contenedor = document.getElementById("horarios-disponibles");
+  contenedor.innerHTML = "";
 
+  const horarios = generarHorarios();
   horarios.forEach(hora => {
-    const option = document.createElement("option");
-    option.value = hora;
-    option.textContent = hora;
-    selectHorario.appendChild(option);
+    const label = document.createElement("label");
+    label.style.marginRight = "10px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = hora;
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(` ${hora}`));
+    contenedor.appendChild(label);
   });
 }
 
+
+async function mostrarBloqueos()
+{
+  const lista = document.getElementById("lista-bloqueos");
+  lista.innerHTML = "";
+
+  const snapshot = await db.collection("bloqueos").get();
+  snapshot.forEach(doc => {
+    const { fecha, hora } = doc.data();
+    const item = document.createElement("li");
+
+    item.textContent = hora ? `${fecha} - ${hora}` : `${fecha} (día completo)`;
+
+    const btnDesbloquear = document.createElement("button");
+    btnDesbloquear.textContent = "Desbloquear";
+    btnDesbloquear.onclick = async () => {
+      await db.collection("bloqueos").doc(doc.id).delete();
+      mostrarBloqueos();
+    };
+
+    item.appendChild(btnDesbloquear);
+    lista.appendChild(item);
+  });
+}
+
+
 // 🔄 Inicializar
 window.addEventListener("load", () => {
-  poblarHorarios();
+  poblarCheckboxHorarios();
   cargarReservas();
+  mostrarBloqueos();
 });
 
 function formatearFecha(fechaHoraStr) {
