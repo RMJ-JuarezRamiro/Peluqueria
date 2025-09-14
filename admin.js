@@ -19,14 +19,18 @@ async function cargarReservas() {
   tabla.innerHTML = "";
 
   snapshot.forEach(docSnap => {
-    const data = docSnap.data();
+    const { nombre, telefono, fechaHora } = docSnap.data();
+
+
+    console.log("Documento:", docSnap.id, docSnap.data());
+
     const fila = document.createElement("tr");
 
     fila.innerHTML = `
-      <td>${data.nombre}</td>
-      <td>${data.telefono}</td>
-      <td>${formatearFecha(data.fechaHora)}</td>
-      <td>${formatearHora(data.fechaHora)}</td>
+      <td>${nombre}</td>
+      <td>${telefono}</td>
+      <td>${formatearFecha(fechaHora)}</td>
+      <td>${formatearHora(fechaHora)}</td>
 
       <td>
         <button onclick="aceptarTurno('${docSnap.id}')">Aceptar</button>
