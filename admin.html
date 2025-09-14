@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Administración</title>
+  <link rel="stylesheet" href="admin-style.css">
+</head>
+<body>
+  <h1>Panel de Administración</h1>
+
+  <!-- Tabla de reservas -->
+  <section id="reservas">
+    <h2>Reservas pendientes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Teléfono</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-reservas">
+        <!-- Las reservas se insertan aquí dinámicamente -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Gestión de horarios -->
+  <section id="gestion-horarios">
+    <h2>Horarios disponibles</h2>
+    <label for="fecha-horario">Fecha:</label>
+    <input type="date" id="fecha-horario">
+   <label for="nuevo-horario">Horarios disponibles:</label>
+    <select id="nuevo-horario" required>
+  <!-- Las opciones se insertan dinámicamente desde admin.js -->
+    </select>
+
+   
+    <button id="agregar-horario">Agregar horario</button>
+    <button id="bloquear-dia">Bloquear día</button>
+  </section>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
