@@ -25,14 +25,16 @@ async function cargarReservas()
 
   snapshot.forEach(docSnap => {
     const { nombre, telefono, fechaHora, estado } = docSnap.data();
-    // Mostrar información de la reserva en la consola
-    console.log("Reserva:", docSnap.id, "Estado:", estado);
+
     const fila = document.createElement("tr");
 
     const fecha = formatearFecha(fechaHora);
     const hora = formatearHora(fechaHora);
+    // Mostrar información de la reserva en la consola
+    console.log("Agregando a gestionadas:", nombre, telefono, fecha, hora, estado);
 
-    if (estado === "pendiente") {
+    if (estado.trim() === "pendiente")
+    {
       fila.innerHTML = `
         <td>${nombre}</td>
         <td>${telefono}</td>
@@ -44,7 +46,8 @@ async function cargarReservas()
         </td>
       `;
       tablaPendientes.appendChild(fila);
-    } else {
+    } else 
+    {
       fila.innerHTML = `
         <td><input type="checkbox" /></td>
         <td>${nombre}</td>
@@ -93,7 +96,8 @@ window.aceptarTurno = async function(id)
 
   // ✅ Aceptar y bloquear
   await reservaRef.update({ estado: "aceptado" });
-  await db.collection("bloqueos").add({ fecha, hora });
+  await db.collection("bloqueos").add({ fecha, hora, nombre, telefono });
+
 
   cargarReservas();
   mostrarBloqueos();
@@ -184,18 +188,26 @@ function poblarCheckboxHorarios()
   });
 }
 
-
-async function mostrarBloqueos()
-{
+async function mostrarBloqueos() {
   const lista = document.getElementById("lista-bloqueos");
   lista.innerHTML = "";
 
   const snapshot = await db.collection("bloqueos").get();
   snapshot.forEach(doc => {
-    const { fecha, hora } = doc.data();
+    const { fecha, hora, nombre, telefono } = doc.data();
     const item = document.createElement("li");
 
-    item.textContent = hora ? `${fecha} - ${hora}` : `${fecha} (día completo)`;
+    let texto = "";
+
+    if (!hora) {
+      texto = `${fecha} (día completo)`;
+    } else if (nombre && telefono) {
+      texto = `${fecha} - ${hora} (${nombre} - ${telefono})`;
+    } else {
+      texto = `${fecha} - ${hora} (bloqueado manualmente)`;
+    }
+
+    item.textContent = texto;
 
     const btnDesbloquear = document.createElement("button");
     btnDesbloquear.textContent = "Desbloquear";
@@ -210,12 +222,18 @@ async function mostrarBloqueos()
 }
 
 
+
 // 🔄 Inicializar
-window.addEventListener("load", () => {
-  poblarCheckboxHorarios();
-  cargarReservas();
-  mostrarBloqueos();
+window.addEventListener("load", () => 
+{
+  setTimeout(() => 
+  {
+    poblarCheckboxHorarios();
+    cargarReservas();
+    mostrarBloqueos();
+  }, 100);
 });
+
 
 function formatearFecha(fechaHoraStr) {
   if (!fechaHoraStr) return "Fecha no disponible";
