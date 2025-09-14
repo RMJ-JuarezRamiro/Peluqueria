@@ -86,7 +86,7 @@ window.aceptarTurno = async function(id)
   // 🔒 Aceptar y bloquear horario
   const reservaRef = db.collection("reservas").doc(id);
   const reservaSnap = await reservaRef.get();
-  const { fechaHora } = reservaSnap.data();
+  const { fechaHora, nombre, telefono } = reservaSnap.data();
   const [fecha, hora] = fechaHora.split("T");
 
   // 🔍 Verificar si ya está bloqueado
