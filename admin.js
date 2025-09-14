@@ -117,7 +117,10 @@ window.addEventListener("load", () => {
 
 function formatearFecha(fechaHoraStr) {
   if (!fechaHoraStr) return "Fecha no disponible";
-  const fecha = new Date(fechaHoraStr);
+
+  // Asegurarse de que tenga formato ISO completo
+  const fecha = new Date(fechaHoraStr.includes("Z") ? fechaHoraStr : fechaHoraStr + ":00Z");
+
   if (isNaN(fecha)) return "Formato inválido";
   return fecha.toLocaleDateString("es-AR", {
     weekday: "short",
@@ -129,12 +132,15 @@ function formatearFecha(fechaHoraStr) {
 
 function formatearHora(fechaHoraStr) {
   if (!fechaHoraStr) return "Hora no disponible";
-  const fecha = new Date(fechaHoraStr);
+
+  const fecha = new Date(fechaHoraStr.includes("Z") ? fechaHoraStr : fechaHoraStr + ":00Z");
+
   if (isNaN(fecha)) return "Formato inválido";
   return fecha.toLocaleTimeString("es-AR", {
     hour: "2-digit",
     minute: "2-digit"
   });
 }
+
 
 
