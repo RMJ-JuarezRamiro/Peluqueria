@@ -17,32 +17,58 @@ async function cargarReservas()
 {
   const reservasRef = db.collection("reservas");
   const snapshot = await reservasRef.get();
-  const tabla = document.getElementById("tabla-reservas");
-  tabla.innerHTML = "";
+
+  const tablaPendientes = document.getElementById("tabla-reservas");
+  const tablaGestionadas = document.getElementById("tabla-gestionadas");
+  tablaPendientes.innerHTML = "";
+  tablaGestionadas.innerHTML = "";
 
   snapshot.forEach(docSnap => {
-    const { nombre, telefono, fechaHora } = docSnap.data();
-
-
-    console.log("Documento:", docSnap.id, docSnap.data());
-
+    const { nombre, telefono, fechaHora, estado } = docSnap.data();
     const fila = document.createElement("tr");
 
-    fila.innerHTML = `
-      <td>${nombre}</td>
-      <td>${telefono}</td>
-      <td>${formatearFecha(fechaHora)}</td>
-      <td>${formatearHora(fechaHora)}</td>
+    const fecha = formatearFecha(fechaHora);
+    const hora = formatearHora(fechaHora);
 
-      <td>
-        <button onclick="aceptarTurno('${docSnap.id}')">Aceptar</button>
-        <button onclick="rechazarTurno('${docSnap.id}')">Rechazar</button>
-      </td>
-    `;
-
-    tabla.appendChild(fila);
+    if (estado === "pendiente") {
+      fila.innerHTML = `
+        <td>${nombre}</td>
+        <td>${telefono}</td>
+        <td>${fecha}</td>
+        <td>${hora}</td>
+        <td>
+          <button onclick="aceptarTurno('${docSnap.id}')">Aceptar</button>
+          <button onclick="rechazarTurno('${docSnap.id}')">Rechazar</button>
+        </td>
+      `;
+      tablaPendientes.appendChild(fila);
+    } else {
+      fila.innerHTML = `
+        <td><input type="checkbox" /></td>
+        <td>${nombre}</td>
+        <td>${telefono}</td>
+        <td>${fecha}</td>
+        <td>${hora}</td>
+        <td>${estado}</td>
+        <td><button onclick="cancelarReserva('${docSnap.id}')">Cancelar</button></td>
+      `;
+      tablaGestionadas.appendChild(fila);
+    }
   });
 }
+
+// ❌ Cancelar reserva
+window.cancelarReserva = async function(id) 
+{
+  const confirmacion = confirm("¿Estás seguro de cancelar esta reserva?");
+  if (!confirmacion) return;
+
+  const reservaRef = db.collection("reservas").doc(id);
+  await reservaRef.update({ estado: "cancelado" });
+  cargarReservas();
+  mostrarBloqueos(); // liberar el horario
+};
+
 
 // ✅ Aceptar turno
 window.aceptarTurno = async function(id)
