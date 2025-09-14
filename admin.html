@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title>Panel de Administración</title>
   <link rel="stylesheet" href="admin-style.css">
+
+  <!-- Firebase SDK (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <h1>Panel de Administración</h1>
@@ -32,16 +36,15 @@
     <h2>Horarios disponibles</h2>
     <label for="fecha-horario">Fecha:</label>
     <input type="date" id="fecha-horario">
-   <label for="nuevo-horario">Horarios disponibles:</label>
+    <label for="nuevo-horario">Horarios disponibles:</label>
     <select id="nuevo-horario" required>
-  <!-- Las opciones se insertan dinámicamente desde admin.js -->
+      <!-- Las opciones se insertan dinámicamente -->
     </select>
 
-   
     <button id="agregar-horario">Agregar horario</button>
     <button id="bloquear-dia">Bloquear día</button>
   </section>
 
-  <script type="module" src="admin.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>

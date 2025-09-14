@@ -1,16 +1,3 @@
-import { initializeApp } from "firebase/app";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc,
-  addDoc,
-  query,
-  where
-} from "firebase/firestore";
-
 // 🔧 Configuración Firebase
 const firebaseConfig = {
   apiKey: "TU_API_KEY",
@@ -21,13 +8,13 @@ const firebaseConfig = {
   appId: "TU_APP_ID"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // 📋 Mostrar reservas
 async function cargarReservas() {
-  const reservasRef = collection(db, "reservas");
-  const snapshot = await getDocs(reservasRef);
+  const reservasRef = db.collection("reservas");
+  const snapshot = await reservasRef.get();
   const tabla = document.getElementById("tabla-reservas");
   tabla.innerHTML = "";
 
@@ -52,15 +39,15 @@ async function cargarReservas() {
 
 // ✅ Aceptar turno
 window.aceptarTurno = async function(id) {
-  const reservaRef = doc(db, "reservas", id);
-  await updateDoc(reservaRef, { estado: "aceptado" });
+  const reservaRef = db.collection("reservas").doc(id);
+  await reservaRef.update({ estado: "aceptado" });
   cargarReservas();
 };
 
 // ❌ Rechazar turno
 window.rechazarTurno = async function(id) {
-  const reservaRef = doc(db, "reservas", id);
-  await updateDoc(reservaRef, { estado: "rechazado" });
+  const reservaRef = db.collection("reservas").doc(id);
+  await reservaRef.update({ estado: "rechazado" });
   cargarReservas();
 };
 
@@ -69,7 +56,7 @@ document.getElementById("bloquear-dia").addEventListener("click", async () => {
   const fecha = document.getElementById("fecha-horario").value;
   if (!fecha) return alert("Seleccioná una fecha");
 
-  await addDoc(collection(db, "bloqueos"), { fecha });
+  await db.collection("bloqueos").add({ fecha });
   alert("Día bloqueado");
 });
 
@@ -79,10 +66,11 @@ document.getElementById("agregar-horario").addEventListener("click", async () =>
   const hora = document.getElementById("nuevo-horario").value;
   if (!fecha || !hora) return alert("Completá fecha y horario");
 
-  await addDoc(collection(db, "bloqueos"), { fecha, hora });
+  await db.collection("bloqueos").add({ fecha, hora });
   alert("Horario bloqueado");
 });
 
+// 🕒 Generar horarios
 function generarHorarios() {
   const horarios = [];
   let hora = 8;
@@ -103,8 +91,8 @@ function generarHorarios() {
   return horarios;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // 🕒 Poblar el <select> con horarios disponibles
+// 🕒 Poblar el <select> con horarios disponibles
+function poblarHorarios() {
   const selectHorario = document.getElementById("nuevo-horario");
   const horarios = generarHorarios();
 
@@ -114,7 +102,10 @@ document.addEventListener("DOMContentLoaded", () => {
     option.textContent = hora;
     selectHorario.appendChild(option);
   });
-});
+}
 
 // 🔄 Inicializar
-cargarReservas();
+window.addEventListener("load", () => {
+  poblarHorarios();
+  cargarReservas();
+});
