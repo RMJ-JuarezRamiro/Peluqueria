@@ -25,8 +25,9 @@ async function cargarReservas() {
     fila.innerHTML = `
       <td>${data.nombre}</td>
       <td>${data.telefono}</td>
-      <td>${data.fecha}</td>
-      <td>${data.hora}</td>
+      <td>${formatearFecha(data.fechaHora)}</td>
+      <td>${formatearHora(data.fechaHora)}</td>
+
       <td>
         <button onclick="aceptarTurno('${docSnap.id}')">Aceptar</button>
         <button onclick="rechazarTurno('${docSnap.id}')">Rechazar</button>
@@ -109,3 +110,22 @@ window.addEventListener("load", () => {
   poblarHorarios();
   cargarReservas();
 });
+
+function formatearFecha(fechaHoraStr) {
+  const fecha = new Date(fechaHoraStr);
+  return fecha.toLocaleDateString("es-AR", {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+function formatearHora(fechaHoraStr) {
+  const fecha = new Date(fechaHoraStr);
+  return fecha.toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
