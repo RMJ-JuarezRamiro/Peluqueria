@@ -389,16 +389,9 @@ function formatearFecha(fechaHoraStr) {
 }
 
 function formatearHora(fechaHoraStr) {
-  if (!fechaHoraStr) return "Hora no disponible";
-
-  const fecha = new Date(fechaHoraStr.includes("Z") ? fechaHoraStr : fechaHoraStr + ":00Z");
-
-  if (isNaN(fecha)) return "Formato inválido";
-  return fecha.toLocaleTimeString("es-AR", {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  return fechaHoraStr?.split("T")[1] || "Hora no disponible";
 }
+
 
 // Obtener días bloqueados
 async function obtenerDiasBloqueados()
