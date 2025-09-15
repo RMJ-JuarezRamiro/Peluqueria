@@ -203,25 +203,37 @@ function generarHorarios()
 async function poblarCheckboxHorarios() 
 {
   const contenedor = document.getElementById("horarios-disponibles");
-  contenedor.innerHTML = "";
-
   const fechaInput = document.getElementById("fecha-horario");
   const hoy = new Date().toISOString().split("T")[0];
   fechaInput.min = hoy;
 
   const diasBloqueados = await obtenerDiasBloqueados();
 
-  fechaInput.addEventListener("input", async () => {
+  // 🔄 Limpiar listeners previos si los hubiera
+  fechaInput.removeEventListener("input", fechaInput._listener);
+
+  // 🔁 Definir y guardar el nuevo listener
+  const listener = async () => 
+  {
     const fechaSeleccionada = fechaInput.value;
-    if (diasBloqueados.includes(fechaSeleccionada)) 
+    contenedor.innerHTML = "";
+
+    // 🔍 Verificar si el día completo está bloqueado
+    const bloqueoDia = await db.collection("bloqueos")
+      .where("fecha", "==", fechaSeleccionada)
+      .where("hora", "==", null)
+      .get();
+
+    if (!bloqueoDia.empty) 
     {
-      alert("Este día está bloqueado. Seleccioná otro.");
-      fechaInput.value = "";
-      contenedor.innerHTML = "";
+      const aviso = document.createElement("p");
+      aviso.textContent = "Este día está bloqueado completamente. No se pueden seleccionar horarios.";
+      aviso.style.color = "red";
+      contenedor.appendChild(aviso);
       return;
     }
 
-    const horarios = generarHorarios();
+    // 🔍 Verificar horarios bloqueados
     const snapshot = await db.collection("bloqueos")
       .where("fecha", "==", fechaSeleccionada)
       .get();
@@ -230,6 +242,7 @@ async function poblarCheckboxHorarios()
       .map(doc => doc.data().hora)
       .filter(hora => hora); // excluir bloqueos de día completo
 
+    const horarios = generarHorarios();
     horarios.forEach(hora => 
     {
       const label = document.createElement("label");
@@ -249,7 +262,10 @@ async function poblarCheckboxHorarios()
       label.appendChild(document.createTextNode(` ${hora}`));
       contenedor.appendChild(label);
     });
-  });
+  };
+
+  fechaInput.addEventListener("input", listener);
+  fechaInput._listener = listener; // guardar referencia para evitar duplicados
 }
 
 // 🕒 Mostrar bloqueos actuales
