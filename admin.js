@@ -52,7 +52,8 @@ async function cargarReservas()
         </td>
       `;
       tablaPendientes.appendChild(fila);
-    } else 
+    } 
+      else if (!["cancelado", "rechazado"].includes(estado.trim().toLowerCase()))
     {
       fila.innerHTML = `
         <td><input type="checkbox" /></td>
