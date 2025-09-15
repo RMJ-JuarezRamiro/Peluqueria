@@ -123,11 +123,10 @@ document.getElementById("bloquear-dia").addEventListener("click", async () =>
   const fecha = document.getElementById("fecha-horario").value;
   if (!fecha) return alert("Seleccioná una fecha");
 
-  const bloqueosRef = db.collection("bloqueos");
   const snapshot = await db.collection("bloqueos")
-  .where("fecha", "==", fecha)
-  .where("hora", "==", null)
-  .get();
+    .where("fecha", "==", fecha)
+    .where("hora", "==", null)
+    .get();
 
   if (!snapshot.empty) 
   {
@@ -135,11 +134,17 @@ document.getElementById("bloquear-dia").addEventListener("click", async () =>
     return;
   }
 
-  await bloqueosRef.add({ fecha });
+  await db.collection("bloqueos").add({ fecha, hora: null }); // clave
   alert("Día bloqueado");
   mostrarBloqueos();
-});
 
+  // refrescar la UI de horarios si el admin está mirando esa fecha
+  const fechaInput = document.getElementById("fecha-horario");
+  if (fechaInput.value === fecha) {
+    // Re-disparar la lógica de poblar checkboxes
+    fechaInput.dispatchEvent(new Event("input"));
+  }
+});
 
 // 🕒 Bloquear horario específico
 document.getElementById("agregar-horario").addEventListener("click", async () => 
@@ -210,7 +215,10 @@ async function poblarCheckboxHorarios()
   const diasBloqueados = await obtenerDiasBloqueados();
 
   // 🔄 Limpiar listeners previos si los hubiera
-  fechaInput.removeEventListener("input", fechaInput._listener);
+  if (fechaInput._listener)
+  {
+    fechaInput.removeEventListener("input", fechaInput._listener);
+  }
 
   // 🔁 Definir y guardar el nuevo listener
   const listener = async () => 
@@ -222,6 +230,7 @@ async function poblarCheckboxHorarios()
     const bloqueoDia = await db.collection("bloqueos")
       .where("fecha", "==", fechaSeleccionada)
       .where("hora", "==", null)
+      .limit(1)
       .get();
 
     if (!bloqueoDia.empty) 
@@ -230,9 +239,18 @@ async function poblarCheckboxHorarios()
       aviso.textContent = "Este día está bloqueado completamente. No se pueden seleccionar horarios.";
       aviso.style.color = "red";
       contenedor.appendChild(aviso);
+        // Deshabilitar botones en dias bloqueados
+        document.getElementById("agregar-horario").disabled = true;
+        document.getElementById("bloquear-dia").disabled = true;
+
       return;
     }
-
+     else
+    // Habilitar botones si el día no está bloqueado 
+    {
+      document.getElementById("agregar-horario").disabled = false;
+      document.getElementById("bloquear-dia").disabled = false;
+    }
     // 🔍 Verificar horarios bloqueados
     const snapshot = await db.collection("bloqueos")
       .where("fecha", "==", fechaSeleccionada)
