@@ -124,8 +124,10 @@ document.getElementById("bloquear-dia").addEventListener("click", async () =>
   if (!fecha) return alert("Seleccioná una fecha");
 
   const bloqueosRef = db.collection("bloqueos");
-  const q = query(bloqueosRef, where("fecha", "==", fecha), where("hora", "==", null));
-  const snapshot = await getDocs(q);
+  const snapshot = await db.collection("bloqueos")
+  .where("fecha", "==", fecha)
+  .where("hora", "==", null)
+  .get();
 
   if (!snapshot.empty) 
   {
@@ -155,8 +157,10 @@ document.getElementById("agregar-horario").addEventListener("click", async () =>
     const hora = cb.value;
 
     // Verificar si ya está bloqueado
-    const q = query(bloqueosRef, where("fecha", "==", fecha), where("hora", "==", hora));
-    const snapshot = await getDocs(q);
+    const snapshot = await db.collection("bloqueos")
+    .where("fecha", "==", fecha)
+    .where("hora", "==", hora)
+    .get();
 
     if (snapshot.empty) {
       const ref = bloqueosRef.doc();
@@ -228,8 +232,8 @@ async function mostrarBloqueos()
 
   const bloqueosRef = db.collection("bloqueos");
   const snapshot = filtroFecha
-    ? await getDocs(query(bloqueosRef, where("fecha", "==", filtroFecha)))
-    : await getDocs(bloqueosRef);
+  ? await db.collection("bloqueos").where("fecha", "==", filtroFecha).get()
+  : await db.collection("bloqueos").get();
 
   snapshot.forEach(doc => 
   {
