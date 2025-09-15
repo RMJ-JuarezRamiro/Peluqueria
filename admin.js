@@ -135,7 +135,7 @@ document.getElementById("bloquear-dia").addEventListener("click", async () =>
     return;
   }
 
-  await addDoc(bloqueosRef, { fecha });
+  await bloqueosRef.add({ fecha });
   alert("Día bloqueado");
   mostrarBloqueos();
 });
@@ -199,24 +199,56 @@ function generarHorarios()
   return horarios;
 }
 
-// 🕒 Poblar select con horarios
-function poblarCheckboxHorarios()
+// 🕒 Poblar checkboxes de horarios
+async function poblarCheckboxHorarios() 
 {
   const contenedor = document.getElementById("horarios-disponibles");
   contenedor.innerHTML = "";
 
-  const horarios = generarHorarios();
-  horarios.forEach(hora => {
-    const label = document.createElement("label");
-    label.style.marginRight = "10px";
+  const fechaInput = document.getElementById("fecha-horario");
+  const hoy = new Date().toISOString().split("T")[0];
+  fechaInput.min = hoy;
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = hora;
+  const diasBloqueados = await obtenerDiasBloqueados();
 
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(` ${hora}`));
-    contenedor.appendChild(label);
+  fechaInput.addEventListener("input", async () => {
+    const fechaSeleccionada = fechaInput.value;
+    if (diasBloqueados.includes(fechaSeleccionada)) 
+    {
+      alert("Este día está bloqueado. Seleccioná otro.");
+      fechaInput.value = "";
+      contenedor.innerHTML = "";
+      return;
+    }
+
+    const horarios = generarHorarios();
+    const snapshot = await db.collection("bloqueos")
+      .where("fecha", "==", fechaSeleccionada)
+      .get();
+
+    const horariosBloqueados = snapshot.docs
+      .map(doc => doc.data().hora)
+      .filter(hora => hora); // excluir bloqueos de día completo
+
+    horarios.forEach(hora => 
+    {
+      const label = document.createElement("label");
+      label.style.marginRight = "10px";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = hora;
+
+      if (horariosBloqueados.includes(hora)) 
+      {
+        checkbox.disabled = true;
+        label.style.opacity = "0.5";
+      }
+
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(` ${hora}`));
+      contenedor.appendChild(label);
+    });
   });
 }
 
@@ -308,5 +340,16 @@ function formatearHora(fechaHoraStr) {
   });
 }
 
+// Obtener días bloqueados
+async function obtenerDiasBloqueados()
+{
+  const snapshot = await db.collection("bloqueos").where("hora", "==", null).get();
+  const dias = [];
+  snapshot.forEach(doc => {
+    const { fecha } = doc.data();
+    dias.push(fecha);
+  });
+  return dias;
+}
 
 
