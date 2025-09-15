@@ -16,6 +16,7 @@ const db = firebase.firestore();
 async function cargarReservas() 
 {
   const reservasRef = db.collection("reservas");
+  const filtroFecha = document.getElementById("filtro-gestionadas")?.value;
   const snapshot = await reservasRef.get();
 
   const tablaPendientes = document.getElementById("tabla-reservas");
@@ -26,12 +27,17 @@ async function cargarReservas()
   snapshot.forEach(docSnap => {
     const { nombre, telefono, fechaHora, estado } = docSnap.data();
 
-    const fila = document.createElement("tr");
+    // Aplicar filtro si está activo
+    if (filtroFecha) 
+    {
+      const fechaReserva = fechaHora.split("T")[0];
+      if (fechaReserva !== filtroFecha) return;
+    }
 
+    const fila = document.createElement("tr");
     const fecha = formatearFecha(fechaHora);
     const hora = formatearHora(fechaHora);
-    // Mostrar información de la reserva en la consola
-    console.log("Agregando a gestionadas:", nombre, telefono, fecha, hora, estado);
+
 
     if (estado.trim() === "pendiente")
     {
@@ -69,10 +75,28 @@ window.cancelarReserva = async function(id)
   if (!confirmacion) return;
 
   const reservaRef = db.collection("reservas").doc(id);
+  const reservaSnap = await reservaRef.get();
+  const { fechaHora } = reservaSnap.data();
+  const [fecha, hora] = fechaHora.split("T");
+
+  // Eliminar el bloqueo si existe
+  const bloqueosRef = db.collection("bloqueos");
+  const snapshot = await bloqueosRef
+    .where("fecha", "==", fecha)
+    .where("hora", "==", hora)
+    .get();
+
+  snapshot.forEach(doc => {
+    bloqueosRef.doc(doc.id).delete();
+  });
+
+  // Actualizar estado
   await reservaRef.update({ estado: "cancelado" });
+
   cargarReservas();
-  mostrarBloqueos(); // liberar el horario
+  mostrarBloqueos();
 };
+
 
 // 🕒 Cargar horarios ocupados
 const fechaInput = document.getElementById("fecha-horario");
@@ -342,6 +366,7 @@ window.addEventListener("load", () =>
   {
     poblarCheckboxHorarios();
     cargarReservas();
+    document.getElementById("filtro-gestionadas").addEventListener("change", cargarReservas);
     mostrarBloqueos();
   }, 100);
 });
