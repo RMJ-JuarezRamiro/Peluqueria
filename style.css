@@ -1,0 +1,97 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Fondo con el logo */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+  line-height: 1.6;
+  background: url("./imagenes/fondodepantalla.png") no-repeat center center fixed;
+  background-size: cover;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Capa semitransparente */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85); /* Blanco con transparencia */
+  z-index: -1; /* Mantiene la capa detrás del contenido */
+}
+
+/* Contenedor general */
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  color: #111;
+  font-size: 2rem;
+}
+
+/* Formulario */
+form {
+  max-width: 500px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Campos */
+.campo {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+input, select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+
+input:focus, select:focus {
+  border: 1px solid #444;
+}
+
+/* Botón */
+button {
+  width: 100%;
+  padding: 12px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #333;
+}
+
+/* Mensajes */
+#mensaje {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+}
