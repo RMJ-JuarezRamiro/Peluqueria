@@ -3,12 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Peluquería - Reserva de Turnos</title>
+  <title>Lauta BARBER - Reserva de Turnos</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Reserva tu turno</h1>
+  
+  <section id="hero">
+    <!-- Imagen grande o slider con foto del salón, algo atractivo -->
+      <h1>Bienvenido a Lauta BARBER</h1>
+      <p>Donde tu estilo importa</p>
+      <button class="btn-reservar">Reservar</button>
+  </section>
 
+  <section id="servicios">
+    <h2>Servicios & Precios</h2>
+    <div class="servicio-item">
+      <img src="corte.jpg" alt="Corte de cabello">
+      <h3>Corte</h3>
+      <p>"Cortes para caballeros desde $6000 💈<br> si preferís en casa, ¡vamos nosotros! Precio a tratar"</p>
+    </div>
+    <!-- otros servicios -->
+  </section>
+
+  <section id="galeria">
+    <h2>Galería</h2>
+    <div class="galeria-item">
+      <img src="trabajo1.jpg" alt="Trabajo 1">
+    </div>
+    <!-- otras imágenes -->
+  </section>
+
+  <section id="reserva-turno">
+   <h2>Reserva tu turno</h2>
   <!-- FORMULARIO DE RESERVAS -->
 <form id="form-reserva">
   <div class="campo">
@@ -56,12 +82,19 @@
       <option value="20:30">20:30</option>
       <option value="21:00">21:00</option>
     </select>
-    </div>
-
+    </div>  
     <button type="submit">Reservar</button>
   </form>
-
   <p id="mensaje"></p>
+  </section>
+
+  <section id="contacto">
+    <h2>Contacto</h2>
+    <p>Dirección: …</p>
+    <p>Teléfono: …</p>
+    <p>Horario: …</p>
+    <!-- Mapa embebido con Google Maps -->
+  </section>
 
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="script.js"></script>
