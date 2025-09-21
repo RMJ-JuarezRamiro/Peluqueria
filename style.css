@@ -36,6 +36,13 @@ h1 {
   font-size: 2rem;
 }
 
+#hero p {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  color: #444;
+}
+
+
 /* Formulario */
 form {
   max-width: 500px;
