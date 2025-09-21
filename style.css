@@ -37,9 +37,10 @@ h1 {
 }
 
 #hero p {
-  font-size: 1.2rem;
-  margin-top: 10px;
-  color: #444;
+  text-align: center;
+  margin: 20px 0;
+  color: #111;
+  font-size: 2rem;
 }
 
 
