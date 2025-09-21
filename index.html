@@ -25,13 +25,26 @@
     <!-- otros servicios -->
   </section>
 
-  <section id="galeria">
-    <h2>Galería</h2>
-    <div class="galeria-item">
-      <img src="trabajo1.jpg" alt="Trabajo 1">
+<section id="galeria">
+  <h2>Galería</h2>
+
+  <div class="galeria-carrusel">
+    <div class="galeria-fleco inicio"></div>
+
+    <div class="galeria-contenedor">
+      <!-- Aquí el JS insertará las miniaturas -->
     </div>
-    <!-- otras imágenes -->
-  </section>
+
+    <div class="galeria-fleco fin"></div>
+  </div>
+
+  <!-- Modal para vista ampliada -->
+  <div id="modal" class="modal">
+    <span class="cerrar">&times;</span>
+    <div class="modal-contenido"></div>
+  </div>
+</section>
+
 
   <section id="reserva-turno">
    <h2>Reserva tu turno</h2>
@@ -98,5 +111,6 @@
 
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="script.js"></script>
+  <script type="module" src="galeria.js"></script>
 </body>
 </html>
