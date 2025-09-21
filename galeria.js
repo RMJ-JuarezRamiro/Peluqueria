@@ -53,15 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const archivos = [
     "./imagenes/muestra1.jpeg",
     "./imagenes/muestra2.jpeg",
+    "./imagenes/video1.mp4",
     "./imagenes/muestra3.jpeg",
     "./imagenes/muestra4.jpeg",
+    "./imagenes/video2.mp4",
     "./imagenes/muestra5.jpeg",
     "./imagenes/muestra6.jpeg",
+    "./imagenes/video3.mp4",
     "./imagenes/muestra7.jpeg",
     "./imagenes/muestra8.jpeg",
-    "./imagenes/video1.mp4",
-    "./imagenes/video2.mp4",
-    // ...hasta completar los 16
+    "./imagenes/video4.mp4",
+    "./imagenes/muestra9.jpeg",
+    "./imagenes/muestra10.jpeg",
+    "./imagenes/video5.mp4",
+    "./imagenes/video6.mp4",
   ];
 
   new Galeria('.galeria-contenedor', archivos);
