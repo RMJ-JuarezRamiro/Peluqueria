@@ -37,20 +37,38 @@ h1
   font-size: 2rem;
 }
 
-#hero p 
-{
+/* Sección de bienvenida */
+#hero {
+  padding: 30px;
+  background-color: #f5f5f5;
+}
+
+.hero-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.logo-banner {
+  width: 120px;
+  border-radius: 10px;
+}
+
+.texto-intro {
   text-align: center;
-  margin: 5px 0;
+}
+
+.texto-intro h1,
+.texto-intro p {
+  margin: 10px 0;
   color: #111;
   font-size: 2rem;
 }
 
-.logo-banner 
-{
-  text-align: center;
-  width: 50px; /* o el tamaño que prefieras */
-  margin: 10px 0;
-}
+
 
 #servicios 
 {

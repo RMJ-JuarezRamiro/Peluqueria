@@ -39,20 +39,33 @@ setupLoopScroll()
 {
   const contenedor = this.contenedor;
   const scrollSpeed = 1;
+  let activo = true;
+
+  // Detectar interacción del usuario
+  contenedor.addEventListener('mouseenter', () => activo = false);
+  contenedor.addEventListener('mouseleave', () => activo = true);
+  contenedor.addEventListener('touchstart', () => activo = false);
+  contenedor.addEventListener('touchend', () => activo = true);
+  contenedor.addEventListener('mousedown', () => activo = false);
+  contenedor.addEventListener('mouseup', () => activo = true);
 
   const autoScroll = () => 
   {
-    contenedor.scrollLeft += scrollSpeed;
-    // Reiniciar al inicio cuando llega al final
-    if (contenedor.scrollLeft >= contenedor.scrollWidth - contenedor.clientWidth) 
+    if (activo) 
     {
-      contenedor.scrollLeft = 0;
+      contenedor.scrollLeft += scrollSpeed;
+
+      if (contenedor.scrollLeft >= contenedor.scrollWidth - contenedor.clientWidth) 
+      {
+        contenedor.scrollLeft = 0;
+      }
     }
+
     requestAnimationFrame(autoScroll);
   };
+
   autoScroll();
 }
-
 
   abrirModal(elemento) {
     const clone = elemento.cloneNode(true);
