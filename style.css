@@ -29,20 +29,27 @@ body::before {
 }
 
 /* Contenedor general */
-h1 {
+h1 
+{
   text-align: center;
-  margin: 20px 0;
+  margin: 15px 0;
   color: #111;
   font-size: 2rem;
 }
 
-#hero p {
+#hero p 
+{
   text-align: center;
-  margin: 20px 0;
+  margin: 5px 0;
   color: #111;
   font-size: 2rem;
 }
 
+.logo-banner 
+{
+  width: 50px; /* o el tamaño que prefieras */
+  margin: 10px 0;
+}
 
 /* Formulario */
 form {
