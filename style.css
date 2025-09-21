@@ -47,8 +47,19 @@ h1
 
 .logo-banner 
 {
+  text-align: center;
   width: 50px; /* o el tamaño que prefieras */
   margin: 10px 0;
+}
+
+#servicios 
+{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #333;
 }
 
 /* Formulario */

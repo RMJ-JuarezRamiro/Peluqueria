@@ -35,34 +35,24 @@ class Galeria {
   }
 
   /// Configuración del scroll en bucle
-  setupLoopScroll() 
+setupLoopScroll() 
 {
   const contenedor = this.contenedor;
+  const scrollSpeed = 1;
 
-  // Duplicar los elementos visualmente
-  const clones = contenedor.cloneNode(true);
-  clones.querySelectorAll('.galeria-item').forEach(clone => 
-  {
-    contenedor.appendChild(clone);
-  });
-
-  // Scroll automático
-let scrollSpeed = 1;
-
-function autoScroll() 
+  const autoScroll = () => 
   {
     contenedor.scrollLeft += scrollSpeed;
-
-    if (contenedor.scrollLeft >= contenedor.scrollWidth / 2) 
-      {
-        contenedor.scrollLeft -= contenedor.scrollWidth / 2;
-      }
-
-  requestAnimationFrame(autoScroll);
-  }
-
-autoScroll();
+    // Reiniciar al inicio cuando llega al final
+    if (contenedor.scrollLeft >= contenedor.scrollWidth - contenedor.clientWidth) 
+    {
+      contenedor.scrollLeft = 0;
+    }
+    requestAnimationFrame(autoScroll);
+  };
+  autoScroll();
 }
+
 
   abrirModal(elemento) {
     const clone = elemento.cloneNode(true);
