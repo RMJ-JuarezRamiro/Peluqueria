@@ -8,12 +8,14 @@
   <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
 </head>
 <body>
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
-<script>
-  const firebaseConfig = {
+
+  <script>
+  const firebaseConfig = 
+  {
     apiKey: "AIzaSyApV4zjTxUptX1KgFCsehNU400egiqNRiM",
     authDomain: "peluqueria-turnos-bdcf8.firebaseapp.com",
     projectId: "peluqueria-turnos-bdcf8",
@@ -22,11 +24,12 @@
   firebase.initializeApp(firebaseConfig);
 
   firebase.auth().onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html"; // redirige si no está logueado
+    if (!user || user.email !== "lauta@barber.com") {
+      window.location.href = "login.html";
     }
   });
 </script>
+
 
 
   <h1>Panel de Administración</h1>
@@ -110,7 +113,7 @@
   <button onclick="firebase.auth().signOut().then(() => window.location.href = 'login.html');">
   Cerrar sesión
   </button>
-  
+
   <script src="admin.js"></script>
 </body>
 </html>
