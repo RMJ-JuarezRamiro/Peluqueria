@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>login</title>
+<!-- login.html -->
+<form id="login-form">
+  <input type="email" id="email" placeholder="Correo">
+  <input type="password" id="password" placeholder="Contraseña">
+  <button type="submit">Ingresar</button>
+</form>
+
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
+
+<body>
+<script>
+  const firebaseConfig = 
+  {
+    apiKey: "AIzaSyApV4zjTxUptX1KgFCsehNU400egiqNRiM",
+    authDomain: "peluqueria-turnos-bdcf8.firebaseapp.com",
+    projectId: "peluqueria-turnos-bdcf8",
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(() => {
+        window.location.href = "admin.html";
+      })
+      .catch(error => {
+        alert("Acceso denegado: " + error.message);
+      });
+  });
+</script>
+</body>
