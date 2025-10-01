@@ -1,15 +1,3 @@
-// 🔧 Configuración Firebase
-const firebaseConfig = 
-{
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_AUTH_DOMAIN",
-  projectId: "peluqueria-turnos-bdcf8",
-  storageBucket: "TU_BUCKET",
-  messagingSenderId: "TU_SENDER_ID",
-  appId: "TU_APP_ID"
-};
-
-firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // 📋 Mostrar reservas
@@ -212,7 +200,7 @@ function generarHorarios()
   let hora = 8;
   let minuto = 0;
 
-  while (hora < 21 || (hora === 21 && minuto === 0)) 
+  while (hora < 22 || (hora === 22 && minuto === 0)) 
   {
     const h = hora.toString().padStart(2, '0');
     const m = minuto.toString().padStart(2, '0');
