@@ -31,7 +31,7 @@ Este proyecto es una aplicación web para gestionar turnos en una peluquería. P
 
 1. Cloná el repositorio:
    ```bash
-   git clone https://github.com/tuusuario/peluqueria-lauta.git
+   git clone https://github.com/RMJ-Juárez Ramiro/peluqueria-lauta.git
 Abrí index.html en tu navegador o desplegalo en GitHub Pages.
 
 Configurá tus credenciales de Firebase en firebase-config.js.
