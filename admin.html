@@ -24,10 +24,12 @@
   firebase.initializeApp(firebaseConfig);
 
   firebase.auth().onAuthStateChanged(user => {
-    if (!user || user.email !== "lauta@barber.com") {
-      window.location.href = "login.html";
-    }
-  });
+  const adminEmails = ["lauta@barber.com", "rm.juarezramiro@gmail.com"];
+  if (!user || !adminEmails.includes(user.email)) {
+    window.location.href = "login.html";
+  }
+});
+
 </script>
 
 
